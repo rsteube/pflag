@@ -50,6 +50,12 @@ func (f *FlagSet) BoolVar(p *bool, name string, value bool, usage string) {
 	f.BoolVarP(p, name, "", value, usage)
 }
 
+// BoolVarL is like BoolVarS, TODO
+func (f *FlagSet) BoolVarL(p *bool, name string, value bool, usage string) {
+	flag := f.VarLF(newBoolValue(value, p), name, usage)
+	flag.NoOptDefVal = "true"
+}
+
 // BoolVarP is like BoolVar, but accepts a shorthand letter that can be used after a single dash.
 func (f *FlagSet) BoolVarP(p *bool, name, shorthand string, value bool, usage string) {
 	flag := f.VarPF(newBoolValue(value, p), name, shorthand, usage)
@@ -86,6 +92,13 @@ func (f *FlagSet) Bool(name string, value bool, usage string) *bool {
 	return f.BoolP(name, "", value, usage)
 }
 
+// BoolL is like Bool, but TODO
+func (f *FlagSet) BoolL(name string,  value bool, usage string) *bool {
+	p := new(bool)
+	f.BoolVarLS(p, name, value, usage)
+	return p
+}
+
 // BoolP is like Bool, but accepts a shorthand letter that can be used after a single dash.
 func (f *FlagSet) BoolP(name, shorthand string, value bool, usage string) *bool {
 	p := new(bool)
@@ -104,6 +117,11 @@ func (f *FlagSet) BoolS(name string, shorthand string, value bool, usage string)
 // The return value is the address of a bool variable that stores the value of the flag.
 func Bool(name string, value bool, usage string) *bool {
 	return BoolP(name, "", value, usage)
+}
+
+// BoolL is like Bool,
+func BoolLS(name string, value bool, usage string) *bool {
+	return CommandLine.BoolL(name, value, usage)
 }
 
 // BoolP is like Bool, but accepts a shorthand letter that can be used after a single dash.

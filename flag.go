@@ -147,6 +147,9 @@ type FlagSet struct {
 	// DisableBuiltinHelp toggles the built-in convention of handling -h and --help
 	DisableBuiltinHelp bool
 
+	// NonPosix toggles shorthand flag chain support
+	NonPosix bool
+
 	name              string
 	parsed            bool
 	actual            map[NormalizedName]*Flag
@@ -171,6 +174,7 @@ type Flag struct {
 	Name                string              // name as it appears on command line
 	Shorthand           string              // one-letter abbreviated flag
 	ShorthandOnly       bool                // If the user set only the shorthand
+	LongShorthand       bool                // overrides the on-letter length limitation
 	Usage               string              // help message
 	Value               Value               // value as set
 	DefValue            string              // default value (as text); for usage message
@@ -829,6 +833,20 @@ func Args() []string { return CommandLine.args }
 // decompose the comma-separated string into the slice.
 func (f *FlagSet) Var(value Value, name string, usage string) {
 	f.VarP(value, name, "", usage)
+}
+
+// VarLF is like VarL, but returns the flag created
+func (f *FlagSet) VarLF(value Value, name, shorthand, usage string) *Flag {
+	flag := f.VarPF(value, name, "", usage)
+	flag.LongShorthand = true
+	flag.ShorthandOnly = true
+	f.NonPosix = true
+	return flag
+}
+
+// VarL is like VarS, but but allows more than one character for shorthand
+func (f *FlagSet) VarL(value Value, name, shorthand, usage string) {
+	f.VarLF(value, name, shorthand, usage)
 }
 
 // VarPF is like VarP, but returns the flag created
